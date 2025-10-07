@@ -1,0 +1,80 @@
+#------------------------------------------------------------------------------
+# List of strings accepted by conda (25.7) as MatchSpecs that I would argue
+# should be errors, rather than being parsed as some MatchSpec.  Many of these
+# are based on patterns found in conda's `tests/models/test_match_spec.py`.
+#
+# Here, "accepted" means a `MatchSpec` object can be constructed using the
+# string; it does NOT necessarily imply that the returned object is useful,
+# semantically meaningful, and/or meets user expectations.
+#------------------------------------------------------------------------------
+
+# Violations of CEP 26 package names
++somepkg
+-somepkg
+.somepkg
+?somepkg
+some/pkg
+some--pkg
+some..pkg
+some__pkg
+___somepkg
+{sOmEpKg}^3
+zwsp​pkg
+😭
+
+# Paths to files that break CEP 26 package name requirements
+relpath/to/some pkg-1.2-3-h456789a_0.tar.bz2
+/abs/path/to/some pkg-1.2-3-h456789a_0.tar.bz2
+
+conda-forge::some pkg-1.2-3-h456789a_0.conda
+conda-forge::some pkg-1.2-3-h456789a_0.tar.bz2
+https://repo.example.com/relpath/to/pkgs/main/linux-64/some pkg-1.2-3-h456789a_0.tar.bz2
+
+# [Potential] violations of CEP 26 version strings
+somepkg=
+somepkg=1.2-3
+somepkg=1.2-3ppa4
+somepkg=version
+
+# Violations of CEP 26 build strings
+somepkg=1.2=😭
+
+# Build strings probably should not support comparison operators other than
+# equality and/or inequality.  They certainly should not support comparison
+# combined with globbing.
+somepkg 1.23 >=*_0
+somepkg 1.23 <=*gpu*
+somepkg 1.23 [build='~=py39h456789a_0']
+somepkg 1.23 [build='<=py3*_0']
+somepkg 1.23 [build='>=*gpu*']
+
+# Build numbers should be integers...?
+somepkg * [build_number=string]
+somepkg * [build_number='=*substr*']
+
+# Invalid (or confusing) specifications
+somepkg 1.23 py39h456789a_0 [channel=relpath/to/pkgs/main, subdir]
+somepkg 1.23 py39h456789a_0 [channel=relpath/to/pkgs/main/linux-64, subdir=vms-vax]
+
+# Invalid checksum strings
+*[md5=invalid]
+*[md5=d41d8cd98f00b204e9800998ecf8427e0]
+*[sha256=invalid]
+*[sha256=e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b8550]
+
+# `subdir` matching should not support ordering
+somepkg[subdir='>linux-64']
+somepkg[subdir='<linux-64']
+somepkg[subdir='>=linux-64']
+somepkg[subdir='<=linux-64']
+somepkg[subdir='~=linux-64']
+
+# Brackets used to break up other parts of MatchSpec
+some[subdir="=linux-64"]pkg
+somepkg>=1.2[subdir="=linux-64"].3=h456789a_0
+[bogus]^1
+
+# We should consider limiting globbing madness
+**
+** **
+** ** ****

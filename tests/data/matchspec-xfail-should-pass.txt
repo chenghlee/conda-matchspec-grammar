@@ -1,0 +1,14 @@
+#------------------------------------------------------------------------------
+# List of strings rejected by conda (25.7) as MatchSpecs that I would argue
+# should NOT be errors.  Many of these are based on patterns found in conda's
+# `tests/models/test_match_spec.py`.
+#
+# Here, "rejected" means attempting to construct a `MatchSpec` object with the
+# string raises an exception; it does NOT necessarily imply that if the parse
+# had been successful, the resulting `MatchSpec` object would be actually
+# meaningful and/or useful.
+#------------------------------------------------------------------------------
+
+# Inconsistent whitespace handling
+somepkg >=1.2,<  2.0
+somepkg[version='>=1.2 , < 2.0']

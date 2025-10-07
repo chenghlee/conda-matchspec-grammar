@@ -1,0 +1,57 @@
+#-----------------------------------------------------------------------------
+# List of MatchSpec strings rejected by conda (25.7), based on patterns
+# extracted from `tests/models/test_match_spec.py` in the `conda` repository.
+#
+# Here, "rejected" means attempting to construct a `MatchSpec` object with the
+# string raises an exception; it does NOT necessarily imply that if the parse
+# had been successful, the resulting `MatchSpec` object would be actually
+# meaningful and/or useful.
+#-----------------------------------------------------------------------------
+
+# Invalid package name
+!somepkg
+
+# Invalid versions
+somepkg=!1.2
+somepkg=a!1.2
+somepkg=😭
+somepkg=-1.*
+somepkg=1.1α        # Greek small letter alpha (U+03B1)
+somepkg=1.1а        # Cyrillic small letter A (U+0430)
+somepkg=1.2-3~ppa4
+
+# Invalid build strings
+somepkg=!1.2=😭
+somepkg=1.1~ppa1
+
+# Invalid constraints
+somepkg==
+somepkg!=
+somepkg~=
+somepkg~=1.23.*
+somepkg>=
+somepkg<=
+somepkg 1.2.3<4.5.6
+somepkg =1.2=
+somepkg ==1.2=
+somepkg >=1.2.3,<1.0.0<py312|>=0.13.0,<1.0.0>=py312
+
+somepkg 1.23 >=py39h456789a_0
+
+# Invalid property name
+somepkg[invalid="1"]
+somepkg[sha512=cf83e13]
+
+# Invalid property matches
+*[track_features=]
+somepkg[track_features=]
+somepkg [track_features=]
+
+# Other invalid strings
+=
+*/lin(ux-65::f/o>=>1y
+^(aaaa$
+somepkg [version=
+
+# Key-value features interface removed in conda 4.4
+numpy[build_number=0,provides_features='blas=mkl debug=true']

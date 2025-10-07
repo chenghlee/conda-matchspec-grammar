@@ -1,0 +1,355 @@
+#-----------------------------------------------------------------------------
+# List of MatchSpec strings accepted by conda (25.7), based on patterns
+# extracted from `tests/models/test_match_spec.py` in the `conda` repository.
+#
+# Here, "accepted" means a `MatchSpec` object can be constructed using the
+# string; it does NOT necessarily imply that the returned object is useful,
+# semantically meaningful, and/or meets user expectations.
+#-----------------------------------------------------------------------------
+
+# Basic name matching
+somepkg
+somepkg     # comment
+some.pkg
+some_pkg
+some-pkg
+SoMe-PkG
+_somepkg
+__linux
+
+# Basic version matching
+somepkg 1.2
+somepkg 1.2*
+somepkg 1.23.4.*
+somepkg=1.2
+somepkg=1.23.*
+somepkg==1.2
+somepkg==1.23.*
+somepkg!=1.2
+somepkg!=1.23.*
+somepkg~=1.23
+somepkg>1.2
+somepkg>1.23.*
+somepkg<1.2
+somepkg<1.23.*
+somepkg>=1.2
+somepkg>=1.23.*
+somepkg<=1.2
+somepkg<=1.23.*
+
+somepkg [version=1.23.*]
+somepkg [version==1.23.*]
+
+somepkg[version=" 1.23*"]
+somepkg[version="=1.23.*"]
+somepkg[version="==1.23.*"]
+somepkg[version="!=1.23.*"]
+somepkg[version="~=1.23"]
+somepkg[version=">1.23.*"]
+somepkg[version="<1.23.*"]
+somepkg[version=">=1.23.*"]
+somepkg[version="<=1.23.*"]
+
+# Whitespace handling
+somepkg = 1.23.*
+somepkg == 1.23.*
+somepkg != 1.23.*
+somepkg ~= 1.23
+somepkg > 1.23.*
+somepkg < 1.23.*
+somepkg >= 1.23.*
+somepkg <= 1.23.*
+
+# Basic build matching
+somepkg 1.23 4
+somepkg =1.23 4
+somepkg ==1.23 4
+somepkg !=1.23 4
+somepkg ~=1.23 4
+somepkg >1.23 4
+somepkg <1.23 4
+somepkg >=1.23 4
+somepkg <=1.23 4
+
+somepkg 1.23 py39h456789a_0
+somepkg =1.23 py39h456789a_0
+somepkg ==1.23 py39h456789a_0
+somepkg !=1.23 py39h456789a_0
+somepkg ~=1.23 py39h456789a_0
+somepkg <1.23 py39h456789a_0
+somepkg >1.23 py39h456789a_0
+somepkg <=1.23 py39h456789a_0
+somepkg >=1.23 py39h456789a_0
+
+somepkg 1.23=py39h456789a_0
+somepkg =1.23=py39h456789a_0
+somepkg ==1.23=py39h456789a_0
+somepkg !=1.23=py39h456789a_0
+somepkg ~=1.23=py39h456789a_0
+somepkg <1.23=py39h456789a_0
+somepkg >1.23=py39h456789a_0
+somepkg <=1.23=py39h456789a_0
+somepkg >=1.23=py39h456789a_0
+
+somepkg [version='>1.23' build=4]
+somepkg [version='>1.23',build=py39h456789a_0]
+
+
+# Version matching with boolean operators
+somepkg 1.2|3.4
+somepkg 1.2|3.4 py39_0
+
+somepkg >=1.2,<2.0
+somepkg >=1.2 , < 2.0
+somepkg =1.2,!=1.2.3
+somepkg >=1.2,!=1.3 py39_0
+somepkg >=1.2,<2,!=1.3.4
+somepkg >=1.3,<2|==1.2
+somepkg >=1.2,>1.3
+somepkg >=1.2|1.3*
+somepkg >1.3,<2|==1.2,!=1.4,~=1.5.1 py3*_0
+
+somepkg[version='>=1.2,<2.0']
+somepkg[version='>=1.3,<2|==1.2' build_number=0]
+somepkg [version='>1.3,<2|==1.2,!=1.4,~=1.5.1', build=py3*_0]
+
+
+# Build matching using globs
+somepkg * buildstr
+somepkg=*=buildstr_0
+
+somepkg >=1.2.*=*_0
+somepkg >=1.2.*=*gpu*
+somepkg >=1.2.*=py39*
+
+somepkg * *_3
+somepkg * *gpu*
+somepkg * py39*
+
+somepkg 1.2.3 [build=*_0]
+somepkg 1.2.3 [build=*gpu*]
+somepkg 1.2.3 [build=py39*]
+
+somepkg 1.2.3 [build="*_0"]
+somepkg 1.2.3 [build="*gpu*"]
+somepkg 1.2.3 [build="py39*"]
+
+somepkg 1.2.3 [build="=*_0"]
+somepkg 1.2.3 [build="=*gpu*"]
+somepkg 1.2.3 [build="=py39*"]
+
+# Versions with pre-release, post-release, and/or local components
+somepkg 1.2a34
+somepkg 1.2alpha34
+somepkg 1.2b34
+somepkg 1.2beta34
+somepkg 1.2dev34
+somepkg 1.2post34
+somepkg 1.2pre34
+somepkg 1.2preview34
+somepkg 1.2rc34
+somepkg 1.2rc34.post56
+
+somepkg >2.0,<2.3.a3
+somepkg >2.0,<2.3.b4
+somepkg >2.0,<2.3.dev5
+somepkg >2.0,<2.3-post34
+somepkg >2.0,<2.3-pre34
+somepkg >2.0,<2.3_rc34
+somepkg >2.0,<2.3_rc34.post56
+
+somepkg 1.2.34.56+g7890abcde
+somepkg=1.2.34.post567+1dab973=py39h890abcd_0
+
+
+# "Challenging" version strings
+somepkg >=1!123.4567,<1!890
+somepkg 10a
+somepkg >=9b,<10dev0
+somepkg 1.1.1_
+somepkg 1.1.1c
+somepkg 1.1.1de py39*
+somepkg 1.1.1_,<1.1.1z
+somepkg [version='>=1.1.1g,<2!34zz']
+somepkg >=1.2.3*.vc11
+somepkg >=1.2.3.vc11
+
+
+# Sub-directory matching
+somepkg [subdir=linux-64]
+somepkg [subdir==linux-64]
+somepkg [subdir="=linux-64"]
+
+*/linux-64::somepkg
+*/linux-64::somepkg >=1.23
+*/linux-64::somepkg >=1.23 *gpu*
+
+
+# Channel matching
+conda-forge::*
+conda-forge::somepkg
+conda-forge::somepkg <=1.23
+conda-forge::somepkg <=1.23 *gpu*
+
+relpath/to/pkgs/main::*
+relpath/to/pkgs/main::somepkg
+relpath/to/pkgs/main::somepkg >=1.23
+relpath/to/pkgs/main::somepkg >=1.23 *gpu*
+https://repo.example.com/relpath/to/pkgs/main::somepkg
+
+somepkg=1.23=*gpu*[channel=conda-forge]
+somepkg 1.23 py39h456789a_0 [channel=relpath/to/pkgs/main]
+somepkg[channel=https://repo.example.com/relpath/to/pkgs/main/]
+
+
+# Channel + subdir matching
+conda-forge/*::somepkg
+conda-forge/noarch::somepkg
+conda-forge/linux-64::somepkg >=1.23 *gpu*
+
+relpath/to/pkgs/main/*::somepkg
+relpath/to/pkgs/main/linux-64::somepkg >=1.23 py39h456789a_0
+
+somepkg[channel=conda-forge,subdir=linux-64]
+somepkg=1.23=*gpu* [channel=conda-forge, subdir=linux-64]
+somepkg[channel=https://repo.example.com/relpath/to/pkgs/main/linux-64]
+
+
+# Matching by package properties
+mkl@
+*[features=mkl]
+*[track_features=mkl]
+somepkg[track_features='mkl debug' build=py3*_0]
+somepkg[track_features='mkl,debug', build=py3*_0]
+
+*[license='BSD-3-Clause']
+*[license='*gpl*']
+*[license="*v3+"]
+
+*[license_family='*gpl*']
+*[license_family='*GPL*']
+*[license_family='lgpl']
+*[license_family='LGPL']
+
+*[md5=d41d8cd]
+*[md5=D41D8CD]
+*[md5=d41d8cd98f00b204e9800998ecf8427e]
+somepkg[md5=d41d8cd]
+
+*[sha256=e3b0c44]
+*[sha256=E3B0C44]
+*[sha256=e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855]
+somepkg[sha256=e3b0c44]
+
+somepkg =1.2[build=py3*_2]
+somepkg =1.2 [build="=py3*_2"]
+
+somepkg [version<1.23,build_number=4]
+conda-forge::somepkg[version='1.2.3,<=4',build=py39*,build_number='>=0']
+
+
+# Globbing fun
+somepkg *.1.*,>=2
+somepkg >=1.2,=*.3.*
+some*=*.23.*=*gpu*
+some* *.23.* *gpu*
+somepkg 1.2|3.4 py38*|*gpu*
+*-forge::somepkg=1.2.3=h456789a_0
+conda-*::somepkg=1.2.3=h456789a_0
+conda-*/*::some* >=1.*.2|~=3.4.5 py39*gpu*
+
+
+# URLs can be part of valid MatchSpecs
+https://repo.example.com/relpath/to/pkgs/main/linux-64/somepkg-1.2.34.post567+1dab973-py39h890abcd_0.conda
+https://repo.example.com/relpath/to/pkgs/main/linux-64/somepkg-1.2.34.post567+1dab973-py39h890abcd_0.tar.bz2
+https://repo.example.com/relpath/to/pkgs/main/linux-64/x264-1%21164.3095-h166bdaf_2.tar.bz2
+
+
+# By extension, [local] file system paths are valid MathSpecs too
+somepkg-1.2.3-h456789a_0.conda
+rel/path/to/edfc ñçêáôß/somepkg-1.2.3-h456789a_0.conda
+/abs/path/to/edfc ñçêáôß/somepkg-1.2.3-h456789a_0.conda
+file:///path/to/edfc ñçêáôß/somepkg-1.2.3-h456789a_0.conda
+*[url='file:///path/to/edfc ñçêáôß/somepkg-1.2.3-h456789a_0.conda']
+
+somepkg-1.2-3-h456789a_0.tar.bz2
+rel/subdirectory/somepkg-1.2-3-h456789a_0.tar.bz2
+/abs/path/to/somepkg-1.2-3-h456789a_0.tar.bz2
+file:///abs/path/to/somepkg-1.2.3-h456789a_0.tar.bz2
+*[fn=somepkg-1.2-3-h456789a_0.tar.bz2]
+
+
+# From `test_parse_hard(...)`, but OMG, WHY?!
+* 1.2
+* 1.2 3
+* 1.2 *
+* >=1.2,<2|==1.3
+* >=1.2,<2|==1.3 *
+* >=1.2,<2|==1.3=4
+* * openblas_0
+* * *gpu*
+
+*
+* *
+* * *
+*=[build=*]
+* [version=*,build=*]
+
+
+# These parse just fine, but are (perhaps) useless and/or nonsensical.
+somepkg[md5=*]
+somepkg[sha256=*]
+
+somepkg[name=otherpkg]
+*[name=somepkg]
+somepkg[name=*]
+
+somepkg=1.2.34 [version="=5.6.*"]
+*/linux-64::somepkg[subdir="win-64"]
+somepkg[channel=https://repo.example.com/relpath/to/pkgs/main/linux-64, subdir=win-64]
+conda-forge::somepkg=1.2.3=h456789a_0 [channel=main]
+conda-forge::somepkg=1.2.3=py39h456789a_0 [name="another" channel='pkgs/main',version=">=1.3,<2|!=1.4", build='=*gpu*_5']
+
+
+# These parse just fine, but some or all of the `[...]` constraints get
+# dropped so maybe they should fail?
+somepkg[version 1.23*]
+somepkg[version" 1.23*"]
+somepkg[version!=1.23.*]
+somepkg[version~=1.23]
+somepkg[version>1.23.*]
+somepkg[version<1.23.*]
+somepkg[version>=1.23.*]
+somepkg[version<=1.23.*]
+somepkg[version>1.23 build=4]
+somepkg[version>1.23,build=py39h456789a_0]
+somepkg[version>=1.2,<2.0,build_number=0]
+
+somepkg=1.23.*[build_number>=5]
+
+somepkg[subdir!="linux-64"]
+somepkg[subdir="!=linux-64"]
+
+
+# Not quite sure what to do with these, as they get parsed as package
+# names only, even though they look like they should have version and/or
+# build information as well.
+somepkg-1.2.3-0
+somepkg-1.2.3-*gpu*
+somepkg-1.2.3-0-1.2.3-h456789a_0
+conda-forge::somepkg-1.2.3-0
+conda-forge/*::somepkg-1.2.3-0
+conda-forge/linux-64::somepkg-1.2.3-0
+somepkg-1.2.3-0.whl
+somepkg-1.2.3-0.exe
+
+
+# Not sure we should support mixing `channel/platform::` and filenames
+conda-forge::somepkg-1.2.3-h456789a_0.conda
+conda-forge/linux-64::somepkg-1.2.3-h456789a_0.tar.bz2
+https://repo.example.com/relpath/to/pkgs/main::somepkg-1.2.3-h456789a_0.conda
+https://repo.example.com/relpath/to/pkgs/main/linux-64::somepkg-1.2.3-h456789a_0.tar.bz2
+
+
+# "Legacy" MatchSpecs that maybe we should drop
+conda-forge::somepkg[build=3](target=blarg,optional)

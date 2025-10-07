@@ -1,0 +1,6 @@
+name: matchspec-grammar
+
+dependencies:
+  - python 3.13
+  - pytest
+  - conda 25.7.*
