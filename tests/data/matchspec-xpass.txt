@@ -266,6 +266,9 @@ https://repo.example.com/relpath/to/pkgs/main/linux-64/x264-1%21164.3095-h166bda
 
 
 # By extension, [local] file system paths are valid MathSpecs too
+# These raise interesting questions about whether MatchSpecs need to support
+# paths in a cross-platform/non-native way; e.g., do conda-compatible clients
+# on Linux need to recognize Windows-style paths as MatchSpecs?
 somepkg-1.2.3-h456789a_0.conda
 rel/path/to/edfc ñçêáôß/somepkg-1.2.3-h456789a_0.conda
 /abs/path/to/edfc ñçêáôß/somepkg-1.2.3-h456789a_0.conda
@@ -277,6 +280,10 @@ rel/subdirectory/somepkg-1.2-3-h456789a_0.tar.bz2
 /abs/path/to/somepkg-1.2-3-h456789a_0.tar.bz2
 file:///abs/path/to/somepkg-1.2.3-h456789a_0.tar.bz2
 *[fn=somepkg-1.2-3-h456789a_0.tar.bz2]
+
+rel\path\to\edfc ñçêáôß\somepkg-1.2.3-h456789a_0.conda
+C:\Users\auser\pkgs\somepkg-1.2.3-h456789a_0.conda
+\\ASERVER\buser\pkgs\somepkg-1.2.3-h456789a_0.tar.bz2
 
 
 # From `test_parse_hard(...)`, but OMG, WHY?!
