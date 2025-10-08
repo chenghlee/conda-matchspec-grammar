@@ -9,6 +9,7 @@
 #------------------------------------------------------------------------------
 
 # Violations of CEP 26 package names
+someрkg             # Cyrillic small letter ER (U+0440)
 +somepkg
 -somepkg
 .somepkg

@@ -12,6 +12,7 @@
 !somepkg
 
 # Invalid versions
+somepkg=١.٢         # Arabic-Indic Digits One (U+0661) and Two (U+0662)
 somepkg=!1.2
 somepkg=a!1.2
 somepkg=😭
