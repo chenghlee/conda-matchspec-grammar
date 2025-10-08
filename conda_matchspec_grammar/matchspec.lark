@@ -1,0 +1,165 @@
+// Lark grammar for conda's MatchSpec
+//
+// General notes:
+// * We must use '[0-9]', rather than '\d', to match digits in regular
+//   expressions, as the latter will pick up non-ASCII digits (i.e., other
+//   characters classifed as Unicode Decimal Numbers).
+// * CEP 26 requires letters in package names and versions be lowercase ASCII.
+//   However, it's a bit unclear whether MatchSpec tools are allowed to
+//   perform normalization before accepting strings for those parts; for now,
+//   we use case-insensitive matching in this grammar and rely on downstream
+//   tools to perform lower-casing to conform to the CEP.
+
+%import common.WS
+
+// Ignoring the never-really implemented "namespace" bit that is supposed to
+// fit in between the two "::"s (i.e., ":" namespace ":").
+matchspec         : [channel_spec ["/" subdir_spec] "::"] package_spec ["[" other_specs "]"]
+
+COMMENT           : /#[^\n]*$/
+HEX_DIGIT         : /[0-9a-f]/i
+GLOB              : "*"
+QUOTE_SINGLE      : "'"
+QUOTE_DOUBLE      : "\""
+
+CHANNEL_NAME      : /(?=\D)[\w\/-]+/
+CHANNEL_GLOB      : GLOB
+
+SUBDIR_NAME       : "noarch"
+                  | "linux-32"
+                  | "linux-64"
+                  | "linux-aarch64"
+                  | "linux-ppc64le"
+                  | "linux-s390x"
+                  | "osx-32"
+                  | "osx-64"
+                  | "osx-arm64"
+                  | "win-32"
+                  | "win-64"
+                  | "win-arm64"
+                  | "zos-z"
+SUBDIR_GLOB       : GLOB
+
+package_name      : DISTRIB_PKG_NAME
+                  | VIRTUAL_PKG_NAME
+DISTRIB_PKG_NAME  : "_"? /[a-z0-9][a-z0-9_.-]+/i
+VIRTUAL_PKG_NAME  : "__" /[a-z0-9][a-z0-9_.-]+/i
+package_glob      : GLOB
+
+version           : [version_epoch "!"] version_public ["+" version_local]
+version_epoch     : /\d+/
+version_public    : /[0-9A-Za-z*]+(\.[0-9A-Za-z*_-]+)*/
+version_local     : /[0-9A-Za-z*]+(\.[0-9A-Za-z*_-]+)*/
+
+BUILD_STRING      : /[a-z0-9_-]+/
+BUILD_STRING_GLOB : GLOB
+
+LICENSE           : /[a-z0-9][a-z0-9_-]+/i
+LICENSE_GLOB      : GLOB
+
+CHECKSUM_MD5      : HEX_DIGIT~7..32
+CHECKSUM_SHA256   : HEX_DIGIT~7..64
+checksum_glob     : GLOB
+
+OP_EQUAL          : "="
+OP_EQUAL_STRICT   : "=="
+OP_COMPAT_VER     : "~="
+OP_NOT_EQUAL      : "!="
+OP_ORDERING       : "<" | "<=" | ">" | ">="
+OP_RELATION       : OP_EQUAL
+                  | OP_EQUAL_STRICT
+                  | OP_COMPAT_VER
+                  | OP_NOT_EQUAL
+                  | OP_ORDERING
+
+OP_AND            : "," | "&"
+OP_OR             : "|"
+OP_BOOLEAN        : OP_AND | OP_OR
+
+channel_spec      : channel_name | channel_glob
+channel_name      : CHANNEL_NAME
+channel_glob      : GLOB
+
+subdir_spec       : subdir_name | subdir_glob
+subdir_name       : SUBDIR_NAME
+subdir_glob       : GLOB
+
+package_spec      : package_name [version_spec ["="? build_spec]]
+                  | package_glob [version_spec ["="? build_spec]]
+
+version_spec      : version_clause (version_op version_clause)*
+                  | version_glob
+version_clause    : [version_rel] version
+version_glob      : GLOB
+version_op        : OP_BOOLEAN
+version_rel       : OP_RELATION
+
+build_spec        : build_string | build_glob
+build_string      : [GLOB] BUILD_STRING [GLOB]
+build_glob        : GLOB
+
+build_number_op   : OP_RELATION
+build_number      : /[0-9]+/
+
+license           : LICENSE
+license_family    : LICENSE
+
+// Match other clauses provided as key:value pairs
+other_specs       : other_spec (other_spec_sep other_spec)*
+other_spec        : match_channel
+                  | match_version
+                  | match_build_str
+                  | match_build_num
+                  | match_subdir
+                  | match_license
+                  | match_license_family
+                  | match_md5
+                  | match_sha256
+other_spec_sep    : "," | WS+
+
+match_channel     : "channel=" channel_name
+                  | "channel=" QUOTE_SINGLE channel_name QUOTE_SINGLE 
+                  | "channel=" QUOTE_DOUBLE channel_name QUOTE_DOUBLE
+
+match_version     : "version=" version_spec
+                  | "version=" QUOTE_SINGLE version_spec QUOTE_SINGLE
+                  | "version=" QUOTE_DOUBLE version_spec QUOTE_DOUBLE
+
+match_build_str   : "build=" build_spec
+                  | "build=" QUOTE_SINGLE match_build_op? build_spec QUOTE_SINGLE
+                  | "build=" QUOTE_DOUBLE match_build_op? build_spec QUOTE_DOUBLE
+match_build_op    : OP_EQUAL | OP_EQUAL_STRICT | OP_NOT_EQUAL
+
+match_build_num   : "build_number" build_number_op? build_number
+                  | "build_number=" QUOTE_SINGLE build_number_op? build_number QUOTE_SINGLE
+                  | "build_number=" QUOTE_DOUBLE build_number_op? build_number QUOTE_DOUBLE
+
+match_subdir      : "subdir" match_subdir_op subdir_spec
+                  | "subdir=" QUOTE_SINGLE match_subdir_op? subdir_spec QUOTE_SINGLE
+                  | "subdir=" QUOTE_DOUBLE match_subdir_op? subdir_spec QUOTE_DOUBLE
+match_subdir_op   : OP_EQUAL | OP_EQUAL_STRICT | OP_NOT_EQUAL
+
+match_license     : "license" match_license_op license
+                  | "license=" QUOTE_SINGLE match_license_op? license QUOTE_SINGLE
+                  | "license=" QUOTE_DOUBLE match_license_op? license QUOTE_DOUBLE
+match_license_op  : OP_EQUAL | OP_EQUAL_STRICT | OP_NOT_EQUAL
+
+match_license_family    : "license_family" match_license_op license_family
+                        | "license_family=" QUOTE_SINGLE match_license_op? license_family QUOTE_SINGLE
+                        | "license_family=" QUOTE_DOUBLE match_license_op? license_family QUOTE_DOUBLE
+match_license_family_op : OP_EQUAL | OP_NOT_EQUAL
+
+match_md5         : "md5=" (checksum_md5|checksum_glob)
+                  | "md5=" QUOTE_SINGLE (checksum_md5|checksum_glob) QUOTE_SINGLE
+                  | "md5=" QUOTE_DOUBLE (checksum_md5|checksum_glob) QUOTE_DOUBLE
+checksum_md5      : CHECKSUM_MD5
+
+match_sha256      : "sha256=" (checksum_sha256|checksum_glob)
+                  | "sha256=" QUOTE_SINGLE (checksum_sha256|checksum_glob) QUOTE_SINGLE
+                  | "sha256=" QUOTE_DOUBLE (checksum_sha256|checksum_glob) QUOTE_DOUBLE
+checksum_sha256   : CHECKSUM_SHA256
+
+%ignore WS
+%ignore COMMENT
+
+// vim: set filetype=lark tw=0 ts=2 sts=2 sw=2 et:
