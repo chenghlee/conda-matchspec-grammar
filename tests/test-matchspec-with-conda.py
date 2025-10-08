@@ -6,18 +6,24 @@ import pytest
 from conda.models.match_spec import MatchSpec
 from conda.exceptions import InvalidMatchSpec
 
-
 mydir = Path(dirname(__file__))
 
 XPASS_SPEC_FILES = (
     mydir / "data/matchspec-xpass.txt",
-    mydir / "data/matchspec-xpass-should-fail.txt",
 )
 
 XFAIL_SPEC_FILES = (
     mydir / "data/matchspec-xfail.txt",
+)
+
+SHOULD_PASS_SPEC_FILES = (
     mydir / "data/matchspec-xfail-should-pass.txt",
 )
+
+SHOULD_FAIL_SPEC_FILES = (
+    mydir / "data/matchspec-xpass-should-fail.txt",
+)
+
 
 def read_specs(filename_or_list):
     if isinstance(filename_or_list, (str, Path)):
@@ -38,7 +44,19 @@ def test_xpass(spec):
     assert ms is not None
 
 
+@pytest.mark.parametrize("spec", read_specs(SHOULD_PASS_SPEC_FILES))
+def test_should_pass(spec):
+    ms = MatchSpec(spec)
+    assert ms is not None
+
+
 @pytest.mark.parametrize("spec", read_specs(XFAIL_SPEC_FILES))
 def test_xfail(spec):
+    with pytest.raises(InvalidMatchSpec):
+        ms = MatchSpec(spec)
+
+
+@pytest.mark.parametrize("spec", read_specs(SHOULD_FAIL_SPEC_FILES))
+def test_should_fail(spec):
     with pytest.raises(InvalidMatchSpec):
         ms = MatchSpec(spec)
