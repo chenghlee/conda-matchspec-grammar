@@ -252,7 +252,7 @@ conda-forge::somepkg[version='1.2.3,<=4',build=py39*,build_number='>=0']
 somepkg *.1.*,>=2
 somepkg >=1.2,=*.3.*
 some*=*.23.*=*gpu*
-some* *.23.* *gpu*
+*omep* *.23.* *gpu*
 somepkg 1.2|3.4 py38*|*gpu*
 *-forge::somepkg=1.2.3=h456789a_0
 conda-*::somepkg=1.2.3=h456789a_0
@@ -299,7 +299,6 @@ C:\Users\auser\pkgs\somepkg-1.2.3-h456789a_0.conda
 *
 * *
 * * *
-*=[build=*]
 * [version=*,build=*]
 
 

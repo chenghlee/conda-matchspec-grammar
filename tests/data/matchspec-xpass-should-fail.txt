@@ -24,18 +24,22 @@ zwsp​pkg
 😭
 
 # Paths to files that break CEP 26 package name requirements
+relpath/to/__glibc-3.45-h67890ab_0.conda
 relpath/to/some pkg-1.2-3-h456789a_0.tar.bz2
-/abs/path/to/some pkg-1.2-3-h456789a_0.tar.bz2
+/abs/path/to/some___pkg-1.2-3-h456789a_0.tar.bz2
 
 conda-forge::some pkg-1.2-3-h456789a_0.conda
 conda-forge::some pkg-1.2-3-h456789a_0.tar.bz2
 https://repo.example.com/relpath/to/pkgs/main/linux-64/some pkg-1.2-3-h456789a_0.tar.bz2
 
 # [Potential] violations of CEP 26 version strings
-somepkg=
 somepkg=1.2-3
 somepkg=1.2-3ppa4
 somepkg=version
+
+# Empty version strings
+somepkg=
+*=[build=*]
 
 # Violations of CEP 26 build strings
 somepkg=1.2=😭
@@ -52,6 +56,11 @@ somepkg 1.23 [build='>=*gpu*']
 # Build numbers should be integers...?
 somepkg * [build_number=string]
 somepkg * [build_number='=*substr*']
+
+# Channel and/or platform components should not allow spaces (?)
+conda-forge ::somepkg
+conda-forge/linux-64 ::somepkg
+conda-forge / linux-64 ::somepkg
 
 # Invalid (or confusing) specifications
 somepkg 1.23 py39h456789a_0 [channel=relpath/to/pkgs/main, subdir]

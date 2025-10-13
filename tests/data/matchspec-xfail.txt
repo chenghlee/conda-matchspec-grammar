@@ -12,9 +12,10 @@
 !somepkg
 
 # Invalid versions
-somepkg=١.٢         # Arabic-Indic Digits One (U+0661) and Two (U+0662)
-somepkg=!1.2
-somepkg=a!1.2
+somepkg=٠!١.٢       # Arabic-Indic Zero (U+0660), One (U+0661), Two (U+0662)
+somepkg=𝟣.𝟤         # Mathematical Sans Serif (U+1D7E3, U+1D7E4)
+somepkg=!1.2        # Missing epoch
+somepkg=a!1.2       # Non-numeric epoch
 somepkg=😭
 somepkg=-1.*
 somepkg=1.1α        # Greek small letter alpha (U+03B1)
@@ -22,8 +23,8 @@ somepkg=1.1а        # Cyrillic small letter A (U+0430)
 somepkg=1.2-3~ppa4
 
 # Invalid build strings
-somepkg=!1.2=😭
-somepkg=1.1~ppa1
+somepkg=1.2=
+somepkg=1.2=3~ppa4
 
 # Invalid constraints
 somepkg==
@@ -38,6 +39,10 @@ somepkg ==1.2=
 somepkg >=1.2.3,<1.0.0<py312|>=0.13.0,<1.0.0>=py312
 
 somepkg 1.23 >=py39h456789a_0
+
+# Invalid whitespace
+conda-forge:: somepkg
+conda-forge/linux-64:: somepkg
 
 # Invalid property name
 somepkg[invalid="1"]
