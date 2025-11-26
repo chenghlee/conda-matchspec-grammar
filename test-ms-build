@@ -1,0 +1,23 @@
+#!/usr/bin/env python
+from conda.models.match_spec import MatchSpec
+from conda.exceptions import InvalidMatchSpec
+
+SPECS = (
+    "mypkg 1.2.3 py310",
+    "mypkg 1.2.3 *gpu*",
+    "mypkg 1.2.3 py310,*gpu*",
+    "mypkg 1.2.3 py310|*gpu*",
+    "mypkg 1.2.3 p y 3 1 0 |*gpu*",
+    "mypkg=1.2.3=py310|*gpu*",
+)
+for spec in SPECS:
+    print(f"\n*** Attempting to parse '{spec}'")
+    try:
+        ms = MatchSpec(spec)
+        print(f"parsed as: {ms.spec}",
+              f"name: {ms.name}",
+              f"version: {ms.version}",
+              sep="\n",
+              )
+    except InvalidMatchSpec as err:
+        print(f"ERROR: {err}")

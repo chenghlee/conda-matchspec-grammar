@@ -44,6 +44,7 @@ def test_xpass(spec):
     assert ms is not None
 
 
+@pytest.mark.should
 @pytest.mark.parametrize("spec", read_specs(SHOULD_PASS_SPEC_FILES))
 def test_should_pass(spec):
     ms = MatchSpec(spec)
@@ -56,6 +57,7 @@ def test_xfail(spec):
         ms = MatchSpec(spec)
 
 
+@pytest.mark.should
 @pytest.mark.parametrize("spec", read_specs(SHOULD_FAIL_SPEC_FILES))
 def test_should_fail(spec):
     with pytest.raises(InvalidMatchSpec):

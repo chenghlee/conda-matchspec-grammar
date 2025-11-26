@@ -20,7 +20,8 @@ some..pkg
 some__pkg
 ___somepkg
 {sOmEpKg}^3
-zwsp​pkg
+some   pkg         # Literal tab character
+some​pkg       # Unicode zero-width space
 😭
 
 # Paths to files that break CEP 26 package name requirements
@@ -88,3 +89,6 @@ somepkg>=1.2[subdir="=linux-64"].3=h456789a_0
 **
 ** **
 ** ** ****
+
+# LOLWUT
+somepkg 1.2.3 p y 3 1 0 |*gpu*
