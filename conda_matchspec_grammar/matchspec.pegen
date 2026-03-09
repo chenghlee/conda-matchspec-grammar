@@ -1,0 +1,72 @@
+# Pegen grammar for MatchSpec-like strings.
+#
+# This version is designed to be accepted by `python -m pegen` using the
+# default tokenizer. It models the same high-level structure as matchspec.lark
+# (channel/subdir::name + optional version/build + optional [key=value,...]).
+
+start: matchspec NEWLINE* ENDMARKER
+
+matchspec: [channel_spec ['/' subdir_spec] ':' ':'] package_spec ['[' other_specs ']']
+
+channel_spec: channel_atom ('/' channel_atom)*
+channel_atom: atom_text
+
+subdir_spec: atom_text
+
+package_spec:
+    | package_name [version_spec ['='? build_spec]]
+    | '*' [version_spec ['='? build_spec]]
+
+package_name: atom_text
+
+version: [NUMBER '!'] version_public ['+' version_local]
+version_public: version_part ('.' version_part)*
+version_local: version_part ('.' version_part)*
+version_part: atom_text | '*'
+
+version_spec: version_clause (version_op version_clause)* | '*'
+version_clause: [version_rel] version
+version_op: ',' | '&' | '|'
+version_rel: '=' | '==' | '~=' | '!=' | '<' | '<=' | '>' | '>='
+
+build_spec: build_string | '*'
+build_string: ['*'] atom_text ['*']
+
+build_number_op: '=' | '==' | '~=' | '!=' | '<' | '<=' | '>' | '>='
+build_number: NUMBER
+
+other_specs: ','.other_spec+ | other_spec (other_spec other_spec)*
+
+other_spec:
+    | &'channel' match_channel
+    | &'version' match_version
+    | &'build' match_build_str
+    | &'build_number' match_build_num
+    | &'subdir' match_subdir
+    | &'license_family' match_license_family
+    | &'license' match_license
+    | &'md5' match_md5
+    | &'sha256' match_sha256
+
+match_channel: 'channel' '=' value_text
+match_version: 'version' '=' version_value
+match_build_str: 'build' '=' build_value
+match_build_num: 'build_number' ['='] [build_number_op] build_number
+match_subdir: 'subdir' ['='] [subdir_op] subdir_spec
+match_license: 'license' ['='] [license_op] value_text
+match_license_family: 'license_family' ['='] [license_family_op] value_text
+match_md5: 'md5' '=' value_text
+match_sha256: 'sha256' '=' value_text
+
+subdir_op: '=' | '==' | '!='
+license_op: '=' | '==' | '!='
+license_family_op: '=' | '!='
+
+version_value: version_spec | STRING
+build_value: [build_op] build_spec | STRING
+build_op: '=' | '==' | '!='
+
+value_text: atom_text | STRING | '*'
+
+atom_text: atom_piece (('.' | '-' | '_' | '/') atom_piece)*
+atom_piece: NAME | NUMBER
