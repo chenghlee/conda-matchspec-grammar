@@ -14,6 +14,7 @@
 
 // Ignoring the never-really implemented "namespace" bit that is supposed to
 // fit in between the two "::"s (i.e., ":" namespace ":").
+start             : matchspec
 matchspec         : [channel_spec ["/" subdir_spec] "::"] package_spec ["[" other_specs "]"]
 
 COMMENT           : /#[^\n]*$/
